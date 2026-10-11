@@ -115,12 +115,30 @@ html[lang="ar"] .footer-brand{font-size:1.65rem;font-weight:700}
 .booking-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .field{display:flex;flex-direction:column;gap:5px;min-width:0}
 .field-wide{grid-column:1 / -1}
-.field label{font-size:.8125rem;font-weight:500;color:var(--muted)}
-.field input,.field select{
+.field label,.field-label{font-size:.8125rem;font-weight:500;color:var(--muted)}
+.field input[type="date"]{
   width:100%;min-width:0;height:48px;border:1px solid rgba(21,35,31,.26);border-radius:9px;background:var(--paper);
   color:var(--ink);font:inherit;font-size:1rem;line-height:1.2;padding:0 11px;
 }
-.field input:focus-visible,.field select:focus-visible{outline-offset:1px}
+.field input[type="date"]:focus-visible{outline-offset:1px}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.choices input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.choices label{
+  display:flex;align-items:center;justify-content:center;text-align:center;min-height:52px;padding:6px 8px;cursor:pointer;
+  border:1px solid rgba(21,35,31,.26);border-radius:9px;background:var(--paper);color:var(--ink);
+  font-size:.9375rem;font-weight:500;line-height:1.25;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+.choices input:checked + label{background:var(--green-700);border-color:var(--green-700);color:#fff}
+.choices input:focus-visible + label{outline:2px solid var(--brass);outline-offset:2px}
+.field-row{flex-direction:row;align-items:center;justify-content:space-between;gap:12px}
+.field-row .field-label{font-size:.9375rem;color:var(--ink)}
+.stepper{display:flex;align-items:center;gap:4px}
+.stepper button{
+  appearance:none;width:48px;height:48px;border:1px solid rgba(21,35,31,.26);border-radius:9px;background:var(--paper);color:var(--ink);
+  font:500 1.5rem/1 var(--font-body);cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+.stepper button:disabled{opacity:.38;cursor:default}
+.stepper span{min-width:44px;text-align:center;font-size:1.125rem;font-weight:600}
 .booking .btn{width:100%;margin-top:14px;min-height:52px}
 .form-summary,.form-msg,.form-note{font-size:.9rem;margin-top:10px}
 .form-summary{color:var(--green-700);font-weight:500}
@@ -217,8 +235,6 @@ html[lang="ar"] .services-list h3{font-family:var(--font-body);line-height:1.7;f
 /* ============ Tablette et ordinateur ============ */
 @media (min-width:700px){
   .booking{padding:24px}
-  .booking-grid{grid-template-columns:repeat(4,1fr)}
-  .field-wide{grid-column:auto}
   .rooms-grid{grid-template-columns:repeat(3,1fr);gap:32px}
   .services-list{grid-template-columns:1fr 1fr;column-gap:56px}
   .facts li{padding-block:22px}
@@ -234,8 +250,6 @@ html[lang="ar"] .services-list h3{font-family:var(--font-body);line-height:1.7;f
   .hero-copy{grid-column:1;grid-row:1;align-self:end}
   .hero .booking{grid-column:1;grid-row:2;align-self:start}
   .hero-art{grid-column:2;grid-row:1 / span 2;width:min(100%,430px);justify-self:end;align-self:center}
-  .booking-grid{grid-template-columns:1fr 1fr}
-  .field-wide{grid-column:auto}
   .house .wrap{grid-template-columns:1fr 1fr;row-gap:36px}
   .house-text{grid-column:1;grid-row:1;align-self:end}
   .house .facts{grid-column:1;grid-row:2;align-self:start}
@@ -346,21 +360,26 @@ html[lang="ar"] .services-list h3{font-family:var(--font-body);line-height:1.7;f
             <label for="f-out" data-i18n="f_out">Départ</label>
             <input type="date" id="f-out" name="checkout" required>
           </div>
-          <div class="field">
-            <label for="f-guests" data-i18n="f_guests">Voyageurs</label>
-            <select id="f-guests" name="guests">
-              <option value="1">1</option>
-              <option value="2" selected>2</option>
-              <option value="3">3</option>
-            </select>
+          <div class="field field-wide" role="radiogroup" aria-labelledby="room-label">
+            <span class="field-label" id="room-label" data-i18n="f_room">Chambre</span>
+            <div class="choices">
+              <input type="radio" name="room-choice" id="room-patio" value="patio" checked>
+              <label for="room-patio" data-i18n="r1_name">Chambre Patio</label>
+              <input type="radio" name="room-choice" id="room-zellige" value="zellige">
+              <label for="room-zellige" data-i18n="r2_name">Chambre Zellige</label>
+              <input type="radio" name="room-choice" id="room-suite" value="suite">
+              <label for="room-suite" data-i18n="r3_name">Suite Terrasse</label>
+            </div>
+            <input type="hidden" id="f-room" name="room" value="patio">
           </div>
-          <div class="field">
-            <label for="f-room" data-i18n="f_room">Chambre</label>
-            <select id="f-room" name="room">
-              <option value="patio" data-i18n="r1_name">Chambre Patio</option>
-              <option value="zellige" data-i18n="r2_name">Chambre Zellige</option>
-              <option value="suite" data-i18n="r3_name">Suite Terrasse</option>
-            </select>
+          <div class="field field-wide field-row">
+            <span class="field-label" id="guests-label" data-i18n="f_guests">Voyageurs</span>
+            <div class="stepper" role="group" aria-labelledby="guests-label">
+              <button type="button" id="guests-minus" aria-label="Un voyageur de moins" data-i18n-aria="g_less">&minus;</button>
+              <span id="guests-val" aria-live="polite">2</span>
+              <button type="button" id="guests-plus" aria-label="Un voyageur de plus" data-i18n-aria="g_more">+</button>
+            </div>
+            <input type="hidden" id="f-guests" name="guests" value="2">
           </div>
         </div>
         <button class="btn" type="submit">
@@ -556,6 +575,7 @@ html[lang="ar"] .services-list h3{font-family:var(--font-body);line-height:1.7;f
       page_title: "Riad Dar Qandil, maison d'hôtes dans la médina de Marrakech",
       page_desc: "Cinq chambres autour d'un patio et de sa fontaine, à neuf minutes à pied de la place Jemaa el-Fna. Réservation directe sur WhatsApp.",
       nav_label: "Navigation", lang_label: "Langue",
+      g_less: "Un voyageur de moins", g_more: "Un voyageur de plus",
       art_patio: "Le patio du riad vu à travers une arche",
       err_dates: "Choisissez vos dates d'arrivée et de départ.",
       err_order: "La date de départ doit suivre la date d'arrivée.",
@@ -568,6 +588,7 @@ html[lang="ar"] .services-list h3{font-family:var(--font-body);line-height:1.7;f
       page_title: "Riad Dar Qandil, a guesthouse in the Marrakech medina",
       page_desc: "Five rooms around a courtyard and its fountain, a nine-minute walk from Jemaa el-Fna square. Book directly on WhatsApp.",
       nav_label: "Navigation", lang_label: "Language",
+      g_less: "One guest fewer", g_more: "One more guest",
       art_patio: "The riad courtyard seen through an arch",
       demo: "Demonstration site: the riad, the rates and the contact details are fictional.",
       brand: "Dar Qandil", brand_kind: "Riad, Marrakech medina",
@@ -628,6 +649,7 @@ html[lang="ar"] .services-list h3{font-family:var(--font-body);line-height:1.7;f
       page_title: "رياض دار قنديل، دار ضيافة في المدينة العتيقة بمراكش",
       page_desc: "خمس غرف تحيط بفناء تتوسطه نافورة، على بُعد تسع دقائق مشيًا من ساحة جامع الفنا. الحجز المباشر عبر واتساب.",
       nav_label: "التنقل", lang_label: "اللغة",
+      g_less: "ضيف أقل", g_more: "ضيف إضافي",
       art_patio: "فناء الرياض كما يُرى من خلال قوس",
       demo: "موقع تجريبي: الرياض والأسعار ومعلومات الاتصال غير حقيقية.",
       brand: "دار قنديل", brand_kind: "رياض في المدينة العتيقة بمراكش",
@@ -783,13 +805,35 @@ html[lang="ar"] .services-list h3{font-family:var(--font-body);line-height:1.7;f
     }
     refresh(false);
   });
-  [fOut, fGuests, fRoom].forEach(function (el) {
-    el.addEventListener("change", function () { refresh(false); });
+  fOut.addEventListener("change", function () { refresh(false); });
+
+  /* Voyageurs et chambre : boutons de la page, sans menu natif du téléphone. */
+  var gMinus = document.getElementById("guests-minus");
+  var gPlus = document.getElementById("guests-plus");
+  var gVal = document.getElementById("guests-val");
+  var roomRadios = document.querySelectorAll('input[name="room-choice"]');
+  function setGuests(n) {
+    n = Math.max(1, Math.min(3, n));
+    fGuests.value = String(n);
+    gVal.textContent = String(n);
+    gMinus.disabled = n <= 1;
+    gPlus.disabled = n >= 3;
+  }
+  function setRoom(v) {
+    if (!ROOMS[v]) return;
+    fRoom.value = v;
+    roomRadios.forEach(function (r) { r.checked = r.value === v; });
+  }
+  gMinus.addEventListener("click", function () { setGuests(parseInt(fGuests.value, 10) - 1); refresh(false); });
+  gPlus.addEventListener("click", function () { setGuests(parseInt(fGuests.value, 10) + 1); refresh(false); });
+  roomRadios.forEach(function (r) {
+    r.addEventListener("change", function () { if (r.checked) { fRoom.value = r.value; refresh(false); } });
   });
+  setGuests(2);
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     var s = refresh(true);
-    if (s.error) { (s.a && s.b ? fGuests : (s.a ? fOut : fIn)).focus(); return; }
+    if (s.error) { (s.a && s.b ? gMinus : (s.a ? fOut : fIn)).focus(); return; }
     var text = fill(t("wa_book"), {
       room: t(s.room.key), "in": fmtDate(s.a), out: fmtDate(s.b),
       nights: nightsLabel(s.nights), g: guestsLabel(s.guests)
@@ -798,8 +842,8 @@ html[lang="ar"] .services-list h3{font-family:var(--font-body);line-height:1.7;f
   });
   document.querySelectorAll("[data-room]").forEach(function (btn) {
     btn.addEventListener("click", function () {
-      fRoom.value = btn.getAttribute("data-room");
-      if (parseInt(fGuests.value, 10) > ROOMS[fRoom.value].max) fGuests.value = String(ROOMS[fRoom.value].max);
+      setRoom(btn.getAttribute("data-room"));
+      if (parseInt(fGuests.value, 10) > ROOMS[fRoom.value].max) setGuests(ROOMS[fRoom.value].max);
       refresh(false);
       form.scrollIntoView({ block: "start" });
       fIn.focus({ preventScroll: true });
